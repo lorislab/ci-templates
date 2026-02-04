@@ -28,7 +28,12 @@ on:
         default: 'target/jacoco-report/jacoco.xml'
         required: false
         type: string
-
+      sonar-url:
+        description: 'Sonar server url'
+        default: 'https://sonarcloud.io'
+        required: false
+        type: string
+        
 jobs:
   build:
     name: quarkus build and test
@@ -72,11 +77,8 @@ jobs:
     - name: Sonar publish analyze
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   
-      run: mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-           -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-           -Dsonar.projectName=${{ github.event.repository.name }} \
-           -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }} \
-           -Dsonar.organization=${{ github.repository_owner }} \
-           -Dsonar.host.url=https://sonarcloud.io \
-           -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.jacoco-file }}
+      run: |
+          OPS="-Dsonar.organization=${{ github.repository_owner }} -Dsonar.projectName=${{ github.event.repository.name }} -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}"
+          OPS="$OPS -Dsonar.host.url=${{ inputs.sonar-url }} -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.jacoco-file }}"
+          mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar $OPS -Dsonar.token=${{ secrets.SONAR_TOKEN }}
         
