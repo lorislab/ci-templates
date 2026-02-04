@@ -1,0 +1,17 @@
+name: build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    uses: ./.github/workflows/quarkus-build-jvm.yml
+    secrets: inherit
+    with:
+      push: true
+  # native:
+  #   uses: ./quarkus/quarkus-build-native.yml
+  #   secrets: inherit
+  #   needs: [build]
+  #   with:
+  #     push: true
