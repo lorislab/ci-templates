@@ -1,0 +1,82 @@
+name: quarkus-build
+
+on:
+  workflow_call:
+    inputs:
+      jdk:
+        description: 'JDK version'
+        default: '25'
+        required: false
+        type: string
+      push:
+        description: 'Push docker image'
+        default: false
+        required: false
+        type: boolean
+      tags:
+        description: 'Additional docker image tags'
+        default: '{{ .Branch }}'
+        required: false
+        type: string
+      platform:
+        description: 'Docker platforms'
+        default: 'linux/amd64,linux/arm64'
+        required: false
+        type: string
+      jacoco-file:
+        description: 'Jacoco file for sonar cloud'
+        default: 'target/jacoco-report/jacoco.xml'
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: quarkus build and test
+    runs-on: ubuntu-latest
+    env:
+      QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
+      QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
+      QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
+      QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
+      QUARKUS_DOCKER_BUILDX_PLATFORM: ${{ inputs.platform }}
+      QUARKUS_DOCKER_ADDITIONAL_ARGS: "--provenance=false"
+      SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
+      SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
+      SAMO_DOCKER_TAG_TEMPLATE_LIST: ${{ inputs.tags }}
+      SAMO_CONVENTIONAL_COMMITS: 'true'
+    steps:
+    - uses: lorislab/install-samo-action@v2
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: ${{ inputs.jdk }}
+        cache: 'maven'
+    - uses: docker/setup-qemu-action@v3
+    - uses: docker/setup-buildx-action@v3
+    - uses: docker/login-action@v3
+      with:
+        registry: ${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create build env variables
+      run: |
+        echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
+        echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
+        samo project docker labels >> src/main/resources/application.properties   
+        samo project docker annotations >> src/main/resources/application.properties
+    - name: Build jvm project, run tests and push docker image
+      run: mvn -ntp -B -e clean impsort:check formatter:validate verify --file pom.xml
+    - name: Sonar publish analyze
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   
+      run: mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+           -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+           -Dsonar.projectName=${{ github.event.repository.name }} \
+           -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }} \
+           -Dsonar.organization=${{ github.repository_owner }} \
+           -Dsonar.host.url=https://sonarcloud.io \
+           -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.jacoco-file }}
+        
