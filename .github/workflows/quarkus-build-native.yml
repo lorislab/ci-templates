@@ -41,7 +41,6 @@ jobs:
       QUARKUS_NATIVE_ADDITIONAL_BUILD_ARGS: ${{ inputs.args }}
       SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
       SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
-      SAMO_DOCKER_TAG_TEMPLATE_LIST: {{ .Branch }}-${{ matrix.arch }}
       SAMO_CONVENTIONAL_COMMITS: 'true'
     steps:
       - uses: lorislab/install-samo-action@v2
@@ -72,7 +71,6 @@ jobs:
         run: echo "stdout=$(samo project version)" >> $GITHUB_OUTPUT
       - name: Create build env variables
         run: |
-          echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
           echo "QUARKUS_APPLICATION_VERSION=${{ steps.version.outputs.stdout }}" >> $GITHUB_ENV
           echo "QUARKUS_CONTAINER_IMAGE_TAG=${{ steps.version.outputs.stdout }}-${{ matrix.arch }}" >> $GITHUB_ENV
           echo quarkus.docker.build-args.BUILDKIT_MULTI_PLATFORM=true >> src/main/resources/application.properties
@@ -84,7 +82,7 @@ jobs:
         if: ${{ !cancelled() && inputs.push }}
         run: |
           mkdir -p ${{ runner.temp }}/tags
-          touch "${{ runner.temp }}/tags/${{ matrix.arch }}"
+          touch "${{ runner.temp }}/tags/${{ env.QUARKUS_CONTAINER_IMAGE_TAG }}"
       - name: Upload info
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() && inputs.push }}
