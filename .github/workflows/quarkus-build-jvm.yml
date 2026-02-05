@@ -18,6 +18,11 @@ on:
         default: '{{ .Branch }}'
         required: false
         type: string
+      tags-suffix:
+        description: 'Docker image tags suffix'
+        default: '-jvm'
+        required: false
+        type: string
       platform:
         description: 'Docker platforms'
         default: 'linux/amd64,linux/arm64'
@@ -47,7 +52,7 @@ jobs:
       QUARKUS_DOCKER_ADDITIONAL_ARGS: "--provenance=false"
       SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
       SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
-      SAMO_DOCKER_TAG_TEMPLATE_LIST: ${{ inputs.tags }}
+      SAMO_DOCKER_TAG_TEMPLATE_LIST: ${{ inputs.tags }}${{ inputs.tags-suffix }}
       SAMO_CONVENTIONAL_COMMITS: 'true'
     steps:
     - uses: lorislab/install-samo-action@v2
@@ -70,6 +75,7 @@ jobs:
       run: |
         echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
         echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
+        echo "QUARKUS_CONTAINER_IMAGE_TAG=$(samo project version)${{ inputs.tags-suffix }}" >> $GITHUB_ENV
         samo project docker labels >> src/main/resources/application.properties   
         samo project docker annotations >> src/main/resources/application.properties
     - name: Build jvm project, run tests and push docker image
