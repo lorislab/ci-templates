@@ -95,6 +95,9 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
+    env:
+      QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
+      QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
     steps:
       - uses: lorislab/install-samo-action@v2
       - uses: actions/checkout@v4
@@ -119,8 +122,6 @@ jobs:
           echo "IMAGE=${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/${{ github.event.repository.name }}" >> $GITHUB_ENV
           echo "ANO=$(samo project docker annotations)" >> $GITHUB_ENV
         env:
-          QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
-          QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
           SAMO_DOCKER_ANNOTATION_TEMPLATE: '{{ range $index, $item := .Annotations }}{{if $index}} {{end}}--annotation "index:{{ $item.Key }}={{ $item.Value}}"{{ end }}'
           SAMO_DOCKER_TAG_TEMPLATE_LIST: '{{ .Branch }}'
           SAMO_CONVENTIONAL_COMMITS: 'true'
