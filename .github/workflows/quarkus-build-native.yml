@@ -75,7 +75,6 @@ jobs:
           echo "QUARKUS_CONTAINER_IMAGE_TAG=${{ steps.version.outputs.stdout }}-${{ matrix.arch }}" >> $GITHUB_ENV
           echo quarkus.docker.build-args.BUILDKIT_MULTI_PLATFORM=true >> src/main/resources/application.properties
           samo project docker labels >> src/main/resources/application.properties
-          samo project docker annotations >> src/main/resources/application.properties
       - name: Build native project, run tests and push docker image
         run: mvn -ntp -B -e -DskipUTs=true -Dnative clean impsort:check formatter:validate verify --file pom.xml
       - name: Export digests
