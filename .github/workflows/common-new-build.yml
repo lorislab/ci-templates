@@ -1,0 +1,21 @@
+name: Create new build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: create new build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CI_PAT_PR }}
+          ref: ${{ github.head_ref }}
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          skip_dirty_check: true
+          commit_options: '--allow-empty'
+          commit_message: 'chore(ci): create new build'

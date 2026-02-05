@@ -1,0 +1,15 @@
+name: release
+
+on:
+  workflow_call:
+
+jobs:
+  docker:
+    uses: ./.github/workflows/commmon-docker-release.yaml
+    secrets: inherit
+    with:
+      releaseImageTag: '{{ .Version }}-jvm'
+      tags: '{{ .Release }}-jvm'
+  native:
+    uses: ./.github/workflows/commmon-docker-release.yaml
+    secrets: inherit

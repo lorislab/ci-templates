@@ -1,0 +1,49 @@
+name: Docker release
+
+on:
+  workflow_call:
+    inputs:
+      tags:
+        description: 'Release docker image tags'
+        default: '{{ .Release }}'
+        required: false
+        type: string
+      releaseImageTag:
+        description: 'The docker image tag use for release. Default release candidate docker image tag.'
+        default: '{{ .Version }}'
+        required: false
+        type: string    
+
+jobs:
+  docker:
+    name: docker build and push
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CONFIG: $HOME/.docker
+      SAMO_DOCKER_REGISTRY: ghcr.io
+      SAMO_DOCKER_GROUP: ${{ github.repository_owner }}/
+      SAMO_DOCKER_RELEASE_TAGS: ${{ inputs.tags }}
+      SAMO_DOCKER_RELEASE_REGISTRY: ghcr.io
+      SAMO_DOCKER_RELEASE_GROUP: ${{ github.repository_owner }}/
+      SAMO_DOCKER_SKIP_OPENCONTAINERS_LABELS: 'false'
+      SAMO_DOCKER_CONTEXT: '.'
+      SAMO_DOCKER_SKIP_PULL: 'false'
+      SAMO_DOCKER_BUILD_PUSH: 'false'
+      SAMO_DOCKER_SKIP_DEV: 'false'
+      SAMO_DOCKER_REMOVE_INTERMEDIATE_IMG_SKIP: 'false'
+      SAMO_CONVENTIONAL_COMMITS: 'true'
+      SAMO_DOCKER_RELEASE_IMAGE_TOOLS: true
+      SAMO_DOCKER_RELEASE_IMAGE_TAG: ${{ inputs.releaseImageTag }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.ref_name }}
+    - uses: lorislab/install-samo-action@v2
+    - uses: docker/login-action@v3
+      with:
+        registry: ${{ env.SAMO_DOCKER_REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}  
+    - name: docker release
+      run: samo project docker release -v debug
