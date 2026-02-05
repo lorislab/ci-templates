@@ -71,11 +71,14 @@ jobs:
         registry: ${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Project version
+      id: version
+      run: echo "stdout=$(samo project version)" >> $GITHUB_OUTPUT
     - name: Create build env variables
       run: |
         echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
-        echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
-        echo "QUARKUS_CONTAINER_IMAGE_TAG=$(samo project version)${{ inputs.tags-suffix }}" >> $GITHUB_ENV
+        echo "QUARKUS_APPLICATION_VERSION=${{ steps.version.outputs.stdout }}" >> $GITHUB_ENV
+        echo "QUARKUS_CONTAINER_IMAGE_TAG=${{ steps.version.outputs.stdout }}${{ inputs.tags-suffix }}" >> $GITHUB_ENV
         samo project docker labels >> src/main/resources/application.properties   
         samo project docker annotations >> src/main/resources/application.properties
     - name: Build jvm project, run tests and push docker image
