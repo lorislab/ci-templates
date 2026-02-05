@@ -1,0 +1,16 @@
+name: pr merge
+
+on:
+  workflow_call:
+    inputs:  
+      autoMerge:
+        description: 'Auto merge pr'
+        default: true
+        required: false
+        type: boolean
+
+jobs:
+  auto-merge:
+    if: ${{ inputs.autoMerge }}
+    uses: ./.github/workflows/common-pr-auto-merge.yml
+    secrets: inherit
