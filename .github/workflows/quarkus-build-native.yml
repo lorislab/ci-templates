@@ -127,6 +127,4 @@ jobs:
           SAMO_CONVENTIONAL_COMMITS: 'true'
       - name: Create manifest list and push
         working-directory: ${{ runner.temp }}/tags
-        run: |
-          ANO=$(samo project docker annotations)
-          docker buildx imagetools create -t $IMAGE:$TAG -t $IMAGE:$BRANCH_TAG $ANO $(printf '$IMAGE:%s ' *)
+        run: docker buildx imagetools create -t $IMAGE:$TAG -t $IMAGE:$BRANCH_TAG $ANO $(printf '$IMAGE:%s ' *)
