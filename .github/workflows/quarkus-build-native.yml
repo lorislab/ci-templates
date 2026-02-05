@@ -98,6 +98,7 @@ jobs:
     env:
       QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
       QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
+      SAMO_DOCKER_ANNOTATION_TEMPLATE: '{{ range $index, $item := .Annotations }}{{if $index}} {{end}}--annotation "index:{{ $item.Key }}={{ $item.Value}}"{{ end }}'
       SAMO_DOCKER_TAG_TEMPLATE_LIST: '{{ .Branch }}'
       SAMO_CONVENTIONAL_COMMITS: 'true'
     steps:
