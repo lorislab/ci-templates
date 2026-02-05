@@ -41,7 +41,7 @@ jobs:
       QUARKUS_NATIVE_ADDITIONAL_BUILD_ARGS: ${{ inputs.args }}
       SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
       SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
-      SAMO_DOCKER_TAG_TEMPLATE_LIST: ${{ .Branch }}-${{ matrix.arch }}
+      SAMO_DOCKER_TAG_TEMPLATE_LIST: {{ .Branch }}-${{ matrix.arch }}
       SAMO_CONVENTIONAL_COMMITS: 'true'
     steps:
       - uses: lorislab/install-samo-action@v2
