@@ -9,9 +9,9 @@ jobs:
     secrets: inherit
     with:
       push: true
-  # native:
-  #   uses: ./quarkus/quarkus-build-native.yml
-  #   secrets: inherit
-  #   needs: [build]
-  #   with:
-  #     push: true
+  native:
+    uses: ./.github/workflows/quarkus-build-native.yml
+    secrets: inherit
+    needs: [build]
+    with:
+      push: true
