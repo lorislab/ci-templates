@@ -121,10 +121,9 @@ jobs:
         id: version
         run: echo "stdout=$(samo project version)" >> $GITHUB_OUTPUT
       - name: Create manifest list and push
-        working-directory: ${{ runner.temp }}/tags
         run: |
           BRANCH_TAG=$(samo project docker tags)
           TAG="${{ steps.version.outputs.stdout }}"
           IMAGE="${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/${{ github.event.repository.name }}"
           ANO=$(samo project docker annotations)
-          docker buildx imagetools create -t $IMAGE:$TAG -t $IMAGE:$BRANCH_TAG $ANO $(printf '$IMAGE:%s ' *)
+          docker buildx imagetools create -t $IMAGE:$TAG -t $IMAGE:$BRANCH_TAG $ANO $(printf '$IMAGE:%s ' $(basename -a tags/*))

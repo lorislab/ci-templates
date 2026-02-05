@@ -53,7 +53,7 @@ jobs:
       run: |
         echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
         echo "QUARKUS_APPLICATION_VERSION=${{ steps.version.outputs.stdout }}" >> $GITHUB_ENV
-        echo "QUARKUS_CONTAINER_IMAGE_TAG=${{ steps.version.outputs.stdout }}${{ inputs.tags-suffix }}" >> $GITHUB_ENV
+        echo "QUARKUS_CONTAINER_IMAGE_TAG=${{ steps.version.outputs.stdout }}-jvm" >> $GITHUB_ENV
         samo project docker labels >> src/main/resources/application.properties
         samo project docker annotations >> src/main/resources/application.properties
     - name: Build jvm project, run tests and push docker image
