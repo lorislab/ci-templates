@@ -1,4 +1,4 @@
-name: Lib build
+name: Library build
 on:
   workflow_call:
     inputs:
