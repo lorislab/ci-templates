@@ -2,7 +2,9 @@ name: branch
 
 on:
   workflow_call:
-
+    secrets:
+      SONAR_TOKEN:
+        required: true
 jobs:
   build:
     uses: ./.github/workflows/quarkus-build-jvm.yml

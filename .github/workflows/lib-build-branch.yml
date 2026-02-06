@@ -1,24 +1,8 @@
 name: Library branch
+
 on:
   workflow_call:
-    inputs:
-      jdk:
-        description: 'JDK version'
-        default: '25'
-        required: false
-        type: string
+  
 jobs:
   build:
-    name: build
-    runs-on: ubuntu-latest
-    env:
-      SAMO_CONVENTIONAL_COMMITS: 'true'  
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: ${{ inputs.jdk }}
-          cache: 'maven'
-      - name: Build project
-        run: mvn -ntp -B -e clean install
+    uses: ./.github/workflows/lib-mvn-install.yml

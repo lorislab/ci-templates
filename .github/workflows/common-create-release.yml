@@ -1,7 +1,9 @@
 name: Create release tag
 on:
   workflow_call:
-
+    secrets:
+      CI_PAT_PR:
+        required: true
 jobs:
   release:
     name: create release tag

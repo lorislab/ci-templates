@@ -8,7 +8,9 @@ on:
         default: true
         required: false
         type: boolean
-
+    secrets:
+      CI_PAT_PR:
+        required: true
 jobs:
   auto-merge:
     if: ${{ inputs.autoMerge }}

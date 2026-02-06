@@ -2,7 +2,9 @@ name: Create new build
 
 on:
   workflow_call:
-
+    secrets:
+      CI_PAT_PR:
+        required: true
 jobs:
   build:
     name: create new build

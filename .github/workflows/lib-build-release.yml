@@ -7,6 +7,21 @@ on:
         default: '25'
         required: false
         type: string
+      server-id:
+        description: 'ID of the distributionManagement repository in the pom.xml file.'
+        default: 'central'
+        required: false
+        type: string
+
+    secrets:
+      GPG_PRIVATE_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
+      SERVER_USERNAME:
+        required: true
+      SERVER_PASSWORD:
+        required: true
 jobs:
   build:
     name: build and deploy project
@@ -19,19 +34,19 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ inputs.jdk }}
           cache: 'maven'
-          server-id: central
+          server-id: ${{ inputs.server-id }}
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Update project version
         run: mvn -ntp -B -e versions:set -DnewVersion=${{ github.ref_name }}
       - name: Deploy release to Maven central repository
         run: mvn -ntp -B -e deploy -DskipTests -Prelease
         env:
-          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          MAVEN_USERNAME: ${{ secrets.SERVER_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

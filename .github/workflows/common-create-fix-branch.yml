@@ -1,7 +1,9 @@
 name: Create fix branch
 on:
   workflow_call:
-
+    secrets:
+      CI_PAT_PR:
+        required: true
 jobs:
   fix:
     name: create fix branch
