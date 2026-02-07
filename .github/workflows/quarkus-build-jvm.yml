@@ -60,7 +60,7 @@ jobs:
       run: mvn -ntp -B -e clean impsort:check formatter:validate verify --file pom.xml
     - name: Sonar publish analyze
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
           OPS="-Dsonar.organization=${{ github.repository_owner }} -Dsonar.projectName=${{ github.event.repository.name }} -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}"
           OPS="$OPS -Dsonar.host.url=https://sonarcloud.io -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml"

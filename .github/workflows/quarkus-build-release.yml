@@ -13,3 +13,6 @@ jobs:
   native:
     uses: ./.github/workflows/commmon-docker-release.yaml
     secrets: inherit
+  release:
+    uses: ./.github/workflows/common-github-release.yml
+    secrets: inherit
