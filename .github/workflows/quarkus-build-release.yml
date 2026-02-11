@@ -5,13 +5,13 @@ on:
 
 jobs:
   docker:
-    uses: ./.github/workflows/commmon-docker-release.yaml
+    uses: ./.github/workflows/common-docker-release.yaml
     secrets: inherit
     with:
       releaseImageTag: '{{ .Version }}-jvm'
       tags: '{{ .Release }}-jvm'
   native:
-    uses: ./.github/workflows/commmon-docker-release.yaml
+    uses: ./.github/workflows/common-docker-release.yaml
     secrets: inherit
   release:
     uses: ./.github/workflows/common-github-release.yml
