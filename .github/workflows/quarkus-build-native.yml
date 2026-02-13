@@ -20,7 +20,7 @@ on:
         type: string
       graalvm-version:
         description: 'GraalVM version (release, latest, dev). Default: empty-string or latest.'
-        default: '25.0.1.0-Final'
+        default: '25.0.2.0-Final'
         required: false
         type: string
 
