@@ -23,11 +23,6 @@ on:
         default: '25.0.2.0-Final'
         required: false
         type: string
-      args:
-        description: 'Comma-separated, additional arguments to pass to native the build process.'
-        default: ''
-        required: false
-        type: string
 jobs:
   build:
     name: quarkus native build and test
@@ -42,7 +37,6 @@ jobs:
       QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
       QUARKUS_DOCKER_BUILDX_PLATFORM: ''
       QUARKUS_DOCKER_ADDITIONAL_ARGS: "--provenance=false"
-      QUARKUS_NATIVE_ADDITIONAL_BUILD_ARGS: ${{ inputs.args }}
       SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
       SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
       SAMO_CONVENTIONAL_COMMITS: 'true'
