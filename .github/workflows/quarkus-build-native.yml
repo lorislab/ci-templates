@@ -23,7 +23,11 @@ on:
         default: '25.0.2.0-Final'
         required: false
         type: string
-
+      args:
+        description: 'Comma-separated, additional arguments to pass to native the build process.'
+        default: ''
+        required: false
+        type: string
 jobs:
   build:
     name: quarkus native build and test
